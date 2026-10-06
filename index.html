@@ -8,7 +8,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; }
     body { background-color: #fdfbf7; color: #4a3b32; padding-bottom: 60px; }
     
-    /* 頂部導覽與購物車按鈕 */
+    /* 頂部導覽列 */
     header {
       background-color: #ffffff;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
@@ -133,17 +133,53 @@
       max-height: 85vh;
       overflow-y: auto;
     }
-    .modal-header { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+    
+    /* 購物車頁頂部標題與編輯按鈕 */
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    .btn-edit {
+      background: none;
+      border: 1px solid #8b5a2b;
+      color: #8b5a2b;
+      padding: 4px 12px;
+      border-radius: 15px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .btn-edit:hover {
+      background: #8b5a2b;
+      color: white;
+    }
     
     .cart-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 0;
+      padding: 12px 0;
       border-bottom: 1px dashed #eee;
     }
     .cart-item-info { font-size: 0.95rem; }
-    .cart-item-sub { font-size: 0.8rem; color: #888; }
+    .cart-item-sub { font-size: 0.8rem; color: #888; margin-top: 2px; }
+
+    /* 刪除按鈕 */
+    .btn-delete {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .btn-delete:hover { background-color: #c0392b; }
 
     /* 表單元件 */
     .form-group { margin-bottom: 12px; }
@@ -210,7 +246,10 @@
   <!-- 購物車清單 Modal -->
   <div class="modal" id="cartModal">
     <div class="modal-content">
-      <div class="modal-header">已選購商品清單</div>
+      <div class="modal-header">
+        <span>已選購商品清單</span>
+        <button class="btn-edit" id="editToggleBtn" onclick="toggleEditMode()">[編輯]</button>
+      </div>
       <div id="cartItemsContainer"></div>
       <button class="btn" style="margin-top: 15px;" onclick="openCheckoutModal()">[確定]</button>
       <button class="btn btn-secondary" onclick="closeModal('cartModal')">繼續購物</button>
@@ -220,7 +259,9 @@
   <!-- 結帳填單 Modal -->
   <div class="modal" id="checkoutModal">
     <div class="modal-content">
-      <div class="modal-header">填寫訂購資料</div>
+      <div class="modal-header">
+        <span>填寫訂購資料</span>
+      </div>
       <form id="checkoutForm" onsubmit="submitOrder(event)">
         <div class="form-group">
           <label>姓名 *</label>
@@ -252,173 +293,4 @@
           <textarea id="custNote" rows="2" placeholder="特殊需求或注意事項..."></textarea>
         </div>
 
-        <div class="total-amount" id="checkoutTotal">應付金額：$0</div>
-
-        <button type="submit" class="btn">[送出訂單]</button>
-        <button type="button" class="btn btn-secondary" onclick="closeModal('checkoutModal')">返回購物車</button>
-      </form>
-    </div>
-  </div>
-
-  <script>
-    // 8款甜點資料集 (含蛋糕類與非蛋糕類)
-    const products = [
-      { id: 1, name: "經典草莓法式蛋糕", price: 680, category: "cake", img: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=500&q=80", desc: "嚴選新鮮草莓搭配香濃卡士達醬，經典必吃口感。", flavor: "草莓香甜", allergen: "小麥、牛奶、蛋" },
-      { id: 2, name: "濃郁苦甜巧克力蛋糕", price: 720, category: "cake", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=500&q=80", desc: "採用 70% 法國黑巧克力，甜而不膩且極致滑順。", flavor: "苦甜濃郁", allergen: "小麥、牛奶、蛋、堅果" },
-      { id: 3, name: "日式宇治抹茶千層蛋糕", price: 750, category: "cake", img: "https://images.unsplash.com/photo-1535141192574-5d4897c13136?auto=format&fit=crop&w=500&q=80", desc: "20層手工煎餅堆疊，滿滿的京都宇治抹茶香氣。", flavor: "回甘抹茶", allergen: "小麥、牛奶、蛋" },
-      { id: 4, name: "巴斯克焦香起司蛋糕", price: 600, category: "cake", img: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=500&q=80", desc: "表面帶有濃郁焦香味，內部質地綿密軟濡。", flavor: "重乳酪香", allergen: "牛奶、蛋" },
-      { id: 5, name: "法式繽紛馬卡龍禮盒", price: 450, category: "other", img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?auto=format&fit=crop&w=500&q=80", desc: "一盒6入，外酥內軟的少女酥胸口感。", flavor: "綜合水果與巧克力", allergen: "蛋白、杏仁粉" },
-      { id: 6, name: "焦糖瑪奇朵水果塔", price: 180, category: "other", img: "https://images.unsplash.com/photo-1519869325930-281384150729?auto=format&fit=crop&w=500&q=80", desc: "酥脆塔皮搭配特調焦糖與季節新鮮水果。", flavor: "果香酸甜", allergen: "小麥、牛奶、蛋" },
-      { id: 7, name: "義式香濃提拉米蘇", price: 220, category: "other", img: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=500&q=80", desc: "吸滿濃縮咖啡與馬斯卡彭起司的完美交融。", flavor: "咖啡與酒香", allergen: "牛奶、蛋、微量酒精" },
-      { id: 8, name: "手作香草可麗露", price: 120, category: "other", img: "https://images.unsplash.com/photo-1621236378699-8597faf6a176?auto=format&fit=crop&w=500&q=80", desc: "外層脆口焦糖，內部如蜂巢般Q彈綿密。", flavor: "香草焦糖", allergen: "小麥、牛奶、蛋、朗姆酒" }
-    ];
-
-    let currentProduct = null;
-    let cart = []; // 購物車陣列
-
-    // 初始化渲染商品
-    function renderProductGrid() {
-      const grid = document.getElementById('productGrid');
-      grid.innerHTML = products.map(p => `
-        <div class="product-card" onclick="openDetail(${p.id})">
-          <img src="${p.img}" alt="${p.name}">
-          <h3>${p.name}</h3>
-          <div class="price">NT$ ${p.price}</div>
-        </div>
-      `).join('');
-    }
-
-    // 切換頁面
-    function showPage(pageId) {
-      document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-      document.getElementById(pageId).classList.add('active');
-    }
-
-    // 進入商品詳情頁
-    function openDetail(productId) {
-      currentProduct = products.find(p => p.id === productId);
-      
-      document.getElementById('detailImg').src = currentProduct.img;
-      document.getElementById('detailName').innerText = currentProduct.name;
-      document.getElementById('detailPrice').innerText = `NT$ ${currentProduct.price}`;
-      document.getElementById('detailDesc').innerText = currentProduct.desc;
-      document.getElementById('detailFlavor').innerText = currentProduct.flavor;
-      document.getElementById('detailAllergen').innerText = currentProduct.allergen;
-      document.getElementById('detailQty').value = 1;
-
-      // 若顧客選擇的是蛋糕類，顯示尺寸選項
-      const sizeGroup = document.getElementById('sizeGroup');
-      if (currentProduct.category === 'cake') {
-        sizeGroup.style.display = 'block';
-      } else {
-        sizeGroup.style.display = 'none';
-      }
-
-      showPage('pageDetail');
-    }
-
-    // 加入購物車
-    function addToCart() {
-      const qty = parseInt(document.getElementById('detailQty').value);
-      if (!qty || qty < 1) return alert('請輸入有效的購買數量！');
-
-      let size = "無";
-      let unitPrice = currentProduct.price;
-
-      // 計算蛋糕尺寸價格
-      if (currentProduct.category === 'cake') {
-        const sizeVal = document.getElementById('detailSize').value;
-        if (sizeVal.includes('8吋')) {
-          size = '8吋';
-          unitPrice += 300;
-        } else {
-          size = '6吋';
-        }
-      }
-
-      // 檢查是否已存在相同商品與規格
-      const existingIndex = cart.findIndex(item => item.id === currentProduct.id && item.size === size);
-      
-      if (existingIndex > -1) {
-        cart[existingIndex].qty += qty;
-      } else {
-        cart.push({
-          id: currentProduct.id,
-          name: currentProduct.name,
-          price: unitPrice,
-          size: size,
-          qty: qty
-        });
-      }
-
-      updateCartBadge();
-      alert('已成功加入購物車！');
-      showPage('pageList'); // 加入後回列表
-    }
-
-    // 更新購物車徽章數量 (依「甜點種類」計算，非總數量)
-    function updateCartBadge() {
-      // 取得不重複的甜點 species ID 數量
-      const uniqueProductTypes = new Set(cart.map(item => item.id)).size;
-      document.getElementById('cartBadge').innerText = uniqueProductTypes;
-    }
-
-    // 開啟購物車 Modal
-    function openCartModal() {
-      if (cart.length === 0) {
-        alert('您的購物車是空的！');
-        return;
-      }
-      
-      const container = document.getElementById('cartItemsContainer');
-      container.innerHTML = cart.map(item => `
-        <div class="cart-item">
-          <div>
-            <div class="cart-item-info"><strong>${item.name}</strong></div>
-            <div class="cart-item-sub">規格: ${item.size} | 單價: $${item.price}</div>
-          </div>
-          <div>x ${item.qty}</div>
-        </div>
-      `).join('');
-
-      document.getElementById('cartModal').classList.add('active');
-    }
-
-    // 開啟結帳 Modal
-    function openCheckoutModal() {
-      closeModal('cartModal');
-      
-      // 計算總金額
-      const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-      document.getElementById('checkoutTotal').innerText = `應付金額：NT$ ${total}`;
-
-      document.getElementById('checkoutModal').classList.add('active');
-    }
-
-    // 關閉 Modal
-    function closeModal(modalId) {
-      document.getElementById(modalId).classList.remove('active');
-    }
-
-    // 送出訂單
-    function submitOrder(e) {
-      e.preventDefault();
-
-      // 彈出指定內容的警示框
-      alert('已收到您的訂單申請，請等待段員確認!');
-
-      // 重設購物車與表單，並回到首頁
-      cart = [];
-      updateCartBadge();
-      document.getElementById('checkoutForm').reset();
-      closeModal('checkoutModal');
-      showPage('pageList');
-    }
-
-    // 頁面載入完成後執行
-    window.onload = function() {
-      renderProductGrid();
-    };
-  </script>
-</body>
-</html>
+        <div class="total-amount" id
