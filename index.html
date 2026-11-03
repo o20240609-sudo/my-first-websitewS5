@@ -38,12 +38,42 @@
     .logo-text h1 { font-size: 1.3rem; font-weight: 700; color: var(--primary); letter-spacing: 1px; }
     .logo-text p { font-size: 0.75rem; color: var(--text-light); }
 
+    .header-right { display: flex; align-items: center; gap: 12px; }
+
+    .user-login-btn {
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      padding: 8px 16px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .user-login-btn:hover { background: var(--primary); color: white; }
+
+    .user-status {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logout-link {
+      font-size: 0.8rem;
+      color: var(--danger);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
     .cart-icon-btn {
       position: relative;
       background: var(--primary);
       color: white;
       border: none;
-      padding: 10px 20px;
+      padding: 9px 18px;
       border-radius: 30px;
       cursor: pointer;
       font-size: 0.95rem;
@@ -120,7 +150,8 @@
 
     /* Media Query: 螢幕寬度小於 768px 時改為直向堆疊 */
     @media (max-width: 768px) {
-      header { padding: 12px 16px; }
+      header { padding: 12px 16px; flex-direction: column; gap: 12px; }
+      .header-right { width: 100%; justify-content: space-between; }
       .product-grid { flex-direction: column; align-items: center; gap: 16px; }
       .product-card { width: 100%; max-width: 380px; }
     }
@@ -183,7 +214,7 @@
     .btn-secondary { background-color: #b2bec3; color: #2d3436; margin-top: 8px; box-shadow: none; }
     .btn-secondary:hover { background-color: #636e72; }
 
-    /* Modal 彈窗 (購物車 & 結帳) */
+    /* Modal 彈窗通用樣式 */
     .modal {
       display: none;
       position: fixed;
@@ -304,6 +335,8 @@
       font-weight: 500;
     }
     .total-amount { font-size: 1.3rem; font-weight: 700; color: var(--accent); text-align: right; margin: 20px 0; }
+    .switch-auth-mode { text-align: center; margin-top: 15px; font-size: 0.9rem; color: var(--text-light); }
+    .switch-auth-mode span { color: var(--primary); font-weight: 600; cursor: pointer; text-decoration: underline; }
 
     /* 頁尾 */
     footer {
@@ -328,9 +361,14 @@
         <p>獨立書店與手帳文具舖</p>
       </div>
     </div>
-    <button class="cart-icon-btn" onclick="openCartModal()">
-      🛒 購物車 <span class="cart-badge" id="cartBadge">0</span>
-    </button>
+    <div class="header-right">
+      <div id="authContainer">
+        <button class="user-login-btn" onclick="openAuthModal('login')">👤 會員登入</button>
+      </div>
+      <button class="cart-icon-btn" onclick="openCartModal()">
+        🛒 購物車 <span class="cart-badge" id="cartBadge">0</span>
+      </button>
+    </div>
   </header>
 
   <div class="container">
@@ -379,6 +417,36 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- 會員登入 / 註冊 Modal -->
+  <div class="modal" id="authModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span id="authModalTitle">會員登入</span>
+      </div>
+      <form id="authForm" onsubmit="handleAuthSubmit(event)">
+        <div class="form-group" id="nameGroup" style="display: none;">
+          <label>姓名 *</label>
+          <input type="text" id="authName" placeholder="請輸入您的姓名" />
+        </div>
+        <div class="form-group">
+          <label>手機號碼 (帳號) *</label>
+          <input type="tel" id="authPhone" required placeholder="例：0912345678" maxlength="10" />
+        </div>
+        <div class="form-group">
+          <label>密碼 *</label>
+          <input type="password" id="authPassword" required placeholder="請輸入密碼" />
+        </div>
+
+        <button type="submit" class="btn" id="authSubmitBtn">[ 登入系統 ]</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal('authModal')">取消</button>
+        
+        <div class="switch-auth-mode" id="switchAuthText">
+          還沒有帳號？ <span onclick="toggleAuthMode('register')">點此註冊新帳號</span>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -449,7 +517,7 @@
   </footer>
 
   <script>
-    // 8款獨立書店與文具選品資料集（書籍類可選擇尺寸/規格）
+    // 8款獨立書店與文具選品資料集
     const products = [
       { id: 1, name: "《日常的微光》獨立攝影散文集", price: 580, category: "book", img: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80", desc: "記錄城市角落與溫柔日常的獨立出版攝影集，附作者親簽藏書票。", flavor: "文藝、日常、溫暖", allergen: "100g 貝原紙、精裝本" },
       { id: 2, name: "手作布封皮一日一頁手帳本", price: 720, category: "book", img: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=500&q=80", desc: "採用日本巴川紙，180度完全攤平，適合鋼筆書寫不暈染。", flavor: "沉穩、實用、手感", allergen: "52g 巴川紙、布面精裝" },
@@ -464,6 +532,8 @@
     let currentProduct = null;
     let cart = []; 
     let isEditingCart = false; 
+    let currentUser = null; // 紀錄當前登入會員資料
+    let authMode = 'login'; // 'login' 或 'register'
 
     function renderProductGrid() {
       const grid = document.getElementById('productGrid');
@@ -500,7 +570,6 @@
       document.getElementById('detailAllergen').innerText = currentProduct.allergen;
       document.getElementById('detailQty').value = 1;
 
-      // 書本/手帳類顯示尺寸/規格選項
       const sizeGroup = document.getElementById('sizeGroup');
       if (currentProduct.category === 'book') {
         sizeGroup.style.display = 'block';
@@ -511,6 +580,88 @@
       showPage('pageDetail');
     }
 
+    // --- 會員系統相關函數 ---
+    function openAuthModal(mode) {
+      authMode = mode;
+      const title = document.getElementById('authModalTitle');
+      const nameGroup = document.getElementById('nameGroup');
+      const submitBtn = document.getElementById('authSubmitBtn');
+      const switchText = document.getElementById('switchAuthText');
+      
+      document.getElementById('authForm').reset();
+
+      if (mode === 'login') {
+        title.innerText = '會員登入';
+        nameGroup.style.display = 'none';
+        document.getElementById('authName').required = false;
+        submitBtn.innerText = '[ 登入系統 ]';
+        switchText.innerHTML = '還沒有帳號？ <span onclick="toggleAuthMode(\'register\')">點此註冊新帳號</span>';
+      } else {
+        title.innerText = '註冊新會員';
+        nameGroup.style.display = 'block';
+        document.getElementById('authName').required = true;
+        submitBtn.innerText = '[ 完成註冊並登入 ]';
+        switchText.innerHTML = '已經有帳號了？ <span onclick="toggleAuthMode(\'login\')">點此登入</span>';
+      }
+
+      document.getElementById('authModal').classList.add('active');
+    }
+
+    function toggleAuthMode(mode) {
+      openAuthModal(mode);
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const phone = document.getElementById('authPhone').value.trim();
+      const password = document.getElementById('authPassword').value.trim();
+      
+      const phoneRegex = /^09\d{8}$/;
+      if (!phoneRegex.test(phone)) {
+        alert('手機格式錯誤，必須為 09 開頭之 10 碼數字！');
+        return;
+      }
+
+      if (authMode === 'register') {
+        const name = document.getElementById('authName').value.trim();
+        currentUser = { name, phone };
+        alert(`註冊成功！歡迎加入，${name}。`);
+      } else {
+        // 模擬登入
+        const name = phone === '0912345678' ? '測試會員' : '尊榮會員';
+        currentUser = { name, phone };
+        alert(`登入成功！歡迎回來，${currentUser.name}。`);
+      }
+
+      updateAuthUI();
+      closeModal('authModal');
+    }
+
+    function logoutUser() {
+      if (confirm('確定要登出會員嗎？')) {
+        currentUser = null;
+        updateAuthUI();
+        alert('已成功登出。');
+      }
+    }
+
+    function updateAuthUI() {
+      const container = document.getElementById('authContainer');
+      if (currentUser) {
+        container.innerHTML = `
+          <div class="user-status">
+            <span>👤 ${currentUser.name}</span>
+            <span class="logout-link" onclick="logoutUser()">登出</span>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <button class="user-login-btn" onclick="openAuthModal('login')">👤 會員登入</button>
+        `;
+      }
+    }
+
+    // --- 購物車與結帳相關函數 ---
     function addToCart() {
       const qty = parseInt(document.getElementById('detailQty').value);
       if (!qty || qty < 1) return alert('請輸入有效的購買數量！');
@@ -670,6 +821,12 @@
       
       document.getElementById('checkoutForm').reset();
       document.getElementById('phoneError').style.display = 'none';
+
+      // 若使用者已登入，自動帶入姓名與手機
+      if (currentUser) {
+        document.getElementById('custName').value = currentUser.name;
+        document.getElementById('custPhone').value = currentUser.phone;
+      }
 
       const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
       document.getElementById('checkoutTotal').innerText = `應付金額：NT$ ${total}`;
