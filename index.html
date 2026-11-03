@@ -110,9 +110,35 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
     /* 頁面標題區 */
-    .section-header { text-align: center; margin-bottom: 30px; }
+    .section-header { text-align: center; margin-bottom: 24px; }
     .section-header h2 { font-size: 2rem; color: var(--primary); margin-bottom: 8px; font-weight: 700; }
     .section-header p { color: var(--text-light); font-size: 0.95rem; }
+
+    /* 分類標籤列 */
+    .filter-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .filter-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
 
     /* 選品列表頁 - Flexbox 排版 */
     .product-grid {
@@ -378,6 +404,15 @@
         <h2>獨立出版與精選文具</h2>
         <p>在文字與紙香中尋找生活靈感，品味細緻的手帳時光</p>
       </div>
+
+      <!-- 分類標籤列 -->
+      <div class="filter-tabs">
+        <button class="filter-btn active" onclick="filterProducts('all', this)">全部選品</button>
+        <button class="filter-btn" onclick="filterProducts('book', this)">📖 獨立出版品</button>
+        <button class="filter-btn" onclick="filterProducts('stationery', this)">📝 手帳筆記</button>
+        <button class="filter-btn" onclick="filterProducts('goods', this)">✒️ 文具雜貨</button>
+      </div>
+
       <div class="product-grid" id="productGrid"></div>
     </div>
 
@@ -398,7 +433,7 @@
           </div>
           
           <div>
-            <!-- 書本/本子類專用尺寸與規格選擇 -->
+            <!-- 書本類專用尺寸與規格選擇 -->
             <div class="option-group" id="sizeGroup" style="display: none;">
               <label for="detailSize">選擇規格/尺寸：</label>
               <select id="detailSize">
@@ -517,27 +552,39 @@
   </footer>
 
   <script>
-    // 8款獨立書店與文具選品資料集
+    // 12款擴充選品資料集（含 category 屬性分類）
     const products = [
       { id: 1, name: "《日常的微光》獨立攝影散文集", price: 580, category: "book", img: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80", desc: "記錄城市角落與溫柔日常的獨立出版攝影集，附作者親簽藏書票。", flavor: "文藝、日常、溫暖", allergen: "100g 貝原紙、精裝本" },
-      { id: 2, name: "手作布封皮一日一頁手帳本", price: 720, category: "book", img: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=500&q=80", desc: "採用日本巴川紙，180度完全攤平，適合鋼筆書寫不暈染。", flavor: "沉穩、實用、手感", allergen: "52g 巴川紙、布面精裝" },
-      { id: 3, name: "《漫遊山林》詩文插畫選集", price: 450, category: "book", img: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=500&q=80", desc: "結合山林自然詩作與細膩水彩插畫的獨立Zine小誌。", flavor: "清新、療癒、自然", allergen: "厚磅美術紙、騎馬釘" },
-      { id: 4, name: "復古皮革日誌與筆記本", price: 650, category: "book", img: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=500&q=80", desc: "義大利植鞣革手工製作外皮，內頁可替換式活頁設計。", flavor: "復古、率性、經久耐用", allergen: "植鞣牛皮、道林紙" },
-      { id: 5, name: "真鍮黃銅製復古書籤筆組", price: 320, category: "other", img: "https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?auto=format&fit=crop&w=500&q=80", desc: "越用越有歲月痕跡的黃銅書籤，兼具書寫與夾書功能。", flavor: "金屬質感、經年變化", allergen: "純黃銅材質" },
-      { id: 6, name: "植鞣革手工鋼筆筆套", price: 380, category: "other", img: "https://images.unsplash.com/photo-1585336261022-6fc46059c402?auto=format&fit=crop&w=500&q=80", desc: "保護心愛鋼筆的隨身皮革筆套，職人手縫質感。", flavor: "職人工藝、溫潤手感", allergen: "頭層牛皮、蠟線" },
-      { id: 7, name: "森林系和紙膠帶分裝禮盒", price: 280, category: "other", img: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=500&q=80", desc: "內含6款原創手繪森林與花草主題和紙膠帶，手帳裝飾必備。", flavor: "手帳拼貼、自然系", allergen: "和紙、特殊油墨" },
-      { id: 8, name: "復古木質印章與印泥組", price: 420, category: "other", img: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=500&q=80", desc: "經典排版日期與圖騰木章，為手帳蓋上細緻的時光印記。", flavor: "復古儀式感", allergen: "櫸木、橡膠、植物油印泥" }
+      { id: 2, name: "《漫遊山林》詩文插畫選集", price: 450, category: "book", img: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=500&q=80", desc: "結合山林自然詩作與細膩水彩插畫的獨立Zine小誌。", flavor: "清新、療癒、自然", allergen: "厚磅美術紙、騎馬釘" },
+      { id: 3, name: "《城市漫遊指南》獨立誌", price: 380, category: "book", img: "https://images.unsplash.com/photo-1495640388908-05fa85288e61?auto=format&fit=crop&w=500&q=80", desc: "獨立書店店員走訪全台特色小店的私房散策紀錄。", flavor: "紀實、人文、探索", allergen: "再生輕量紙、膠裝" },
+      { id: 4, name: "手作布封皮一日一頁手帳本", price: 720, category: "stationery", img: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=500&q=80", desc: "採用日本巴川紙，180度完全攤平，適合鋼筆書寫不暈染。", flavor: "沉穩、實用、手感", allergen: "52g 巴川紙、布面精裝" },
+      { id: 5, name: "復古皮革日誌與筆記本", price: 650, category: "stationery", img: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=500&q=80", desc: "義大利植鞣革手工製作外皮，內頁可替換式活頁設計。", flavor: "復古、率性、經久耐用", allergen: "植鞣牛皮、道林紙" },
+      { id: 6, name: "方格眼極簡隨身筆記本", price: 250, category: "stationery", img: "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=500&q=80", desc: "3mm 隱形方格，書寫、繪圖與手帳拼貼的最佳拍檔。", flavor: "簡約、俐落、好攜帶", allergen: "80g 象牙白道林紙" },
+      { id: 7, name: "真鍮黃銅製復古書籤筆組", price: 320, category: "goods", img: "https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?auto=format&fit=crop&w=500&q=80", desc: "越用越有歲月痕跡的黃銅書籤，兼具書寫與夾書功能。", flavor: "金屬質感、經年變化", allergen: "純黃銅材質" },
+      { id: 8, name: "植鞣革手工鋼筆筆套", price: 380, category: "goods", img: "https://images.unsplash.com/photo-1585336261022-6fc46059c402?auto=format&fit=crop&w=500&q=80", desc: "保護心愛鋼筆的隨身皮革筆套，職人手縫質感。", flavor: "職人工藝、溫潤手感", allergen: "頭層牛皮、蠟線" },
+      { id: 9, name: "森林系和紙膠帶分裝禮盒", price: 280, category: "goods", img: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=500&q=80", desc: "內含6款原創手繪森林與花草主題和紙膠帶，手帳裝飾必備。", flavor: "手帳拼貼、自然系", allergen: "和紙、特殊油墨" },
+      { id: 10, name: "復古木質印章與印泥組", price: 420, category: "goods", img: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=500&q=80", desc: "經典排版日期與圖騰木章，為手帳蓋上細緻的時光印記。", flavor: "復古儀式感", allergen: "櫸木、橡膠、植物油印泥" },
+      { id: 11, name: "職人手工帆布書袋/托特包", price: 680, category: "goods", img: "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=500&q=80", desc: "厚磅帆布製作，可容納多本書籍與 A4 檔案夾，文青日常必備。", flavor: "大容量、耐磨、文青風", allergen: "16安純棉帆布" },
+      { id: 12, name: "植栽香氛蠟燭 (書香與白茶)", price: 480, category: "goods", img: "https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&w=500&q=80", desc: "點燃後散發淡淡舊書紙香與白茶香氣，陪伴您靜心閱讀的夜晚。", flavor: "療癒、沈靜、香氛", allergen: "大豆蠟、天然精油" }
     ];
 
     let currentProduct = null;
     let cart = []; 
     let isEditingCart = false; 
-    let currentUser = null; // 紀錄當前登入會員資料
-    let authMode = 'login'; // 'login' 或 'register'
+    let currentUser = null; 
+    let authMode = 'login'; 
+    let currentFilter = 'all';
 
-    function renderProductGrid() {
+    // 渲染商品列表（支援分類篩選）
+    function renderProductGrid(filter = 'all') {
+      currentFilter = filter;
       const grid = document.getElementById('productGrid');
-      grid.innerHTML = products.map(p => `
+      
+      const filteredProducts = filter === 'all' 
+        ? products 
+        : products.filter(p => p.category === filter);
+
+      grid.innerHTML = filteredProducts.map(p => `
         <div class="product-card" onclick="openDetail(${p.id})">
           <div class="product-img-wrap">
             <img src="${p.img}" alt="${p.name}">
@@ -551,6 +598,13 @@
           </div>
         </div>
       `).join('');
+    }
+
+    // 分類按鈕點擊切換
+    function filterProducts(category, btnElement) {
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      btnElement.classList.add('active');
+      renderProductGrid(category);
     }
 
     function showPage(pageId) {
@@ -570,6 +624,7 @@
       document.getElementById('detailAllergen').innerText = currentProduct.allergen;
       document.getElementById('detailQty').value = 1;
 
+      // 只有書籍類（book）顯示尺寸/規格選項
       const sizeGroup = document.getElementById('sizeGroup');
       if (currentProduct.category === 'book') {
         sizeGroup.style.display = 'block';
@@ -627,7 +682,6 @@
         currentUser = { name, phone };
         alert(`註冊成功！歡迎加入，${name}。`);
       } else {
-        // 模擬登入
         const name = phone === '0912345678' ? '測試會員' : '尊榮會員';
         currentUser = { name, phone };
         alert(`登入成功！歡迎回來，${currentUser.name}。`);
@@ -822,7 +876,6 @@
       document.getElementById('checkoutForm').reset();
       document.getElementById('phoneError').style.display = 'none';
 
-      // 若使用者已登入，自動帶入姓名與手機
       if (currentUser) {
         document.getElementById('custName').value = currentUser.name;
         document.getElementById('custPhone').value = currentUser.phone;
@@ -857,7 +910,7 @@
     }
 
     window.onload = function() {
-      renderProductGrid();
+      renderProductGrid('all');
     };
   </script>
 </body>
