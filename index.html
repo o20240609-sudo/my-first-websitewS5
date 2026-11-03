@@ -226,6 +226,12 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
+    .error-text {
+      color: #e74c3c;
+      font-size: 0.8rem;
+      margin-top: 4px;
+      display: none;
+    }
     .total-amount { font-size: 1.2rem; font-weight: bold; color: #c0392b; text-align: right; margin: 15px 0; }
   </style>
 </head>
@@ -307,7 +313,8 @@
         </div>
         <div class="form-group">
           <label>手機 *</label>
-          <input type="tel" id="custPhone" required pattern="[0-9]{10}" placeholder="例：0912345678" />
+          <input type="tel" id="custPhone" required placeholder="例：0912345678" oninput="validatePhone()" maxlength="10" />
+          <div id="phoneError" class="error-text">手機格式錯誤，必須為 09 開頭之 10 碼數字</div>
         </div>
         <div class="form-group">
           <label>領貨日期與時間 *</label>
@@ -526,10 +533,37 @@
       }
     }
 
+    // 手機格式即時驗證函數
+    function validatePhone() {
+      const phoneInput = document.getElementById('custPhone');
+      const errorDiv = document.getElementById('phoneError');
+      const phoneVal = phoneInput.value.trim();
+      
+      // 正則表達式：必須是 09 開頭，後面接著 8 位數字 (總共 10 碼)
+      const phoneRegex = /^09\d{8}$/;
+
+      if (phoneVal === "") {
+        errorDiv.style.display = 'none';
+        return false;
+      }
+
+      if (!phoneRegex.test(phoneVal)) {
+        errorDiv.style.display = 'block';
+        return false;
+      } else {
+        errorDiv.style.display = 'none';
+        return true;
+      }
+    }
+
     function openCheckoutModal() {
       if (cart.length === 0) return alert('購物車內無商品！');
       closeModal('cartModal');
       
+      // 重置表單與驗證紅字
+      document.getElementById('checkoutForm').reset();
+      document.getElementById('phoneError').style.display = 'none';
+
       const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
       document.getElementById('checkoutTotal').innerText = `應付金額：NT$ ${total}`;
 
@@ -542,6 +576,13 @@
 
     function submitOrder(e) {
       e.preventDefault();
+
+      // 送出前再次檢查手機格式
+      if (!validatePhone()) {
+        alert('請填寫正確的手機格式（09開頭之10碼數字）！');
+        document.getElementById('custPhone').focus();
+        return;
+      }
 
       alert('已收到您的訂單申請，請等待段員確認!');
 
