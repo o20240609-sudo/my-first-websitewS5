@@ -3,16 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>甜點線上訂購系統</title>
+  <title>Maison de Dessert | 精緻法式甜點工坊</title>
   <style>
+    :root {
+      --primary: #8b5a2b;
+      --primary-dark: #6f4520;
+      --accent: #d97706;
+      --danger: #e74c3c;
+      --bg-color: #faf7f2;
+      --card-bg: #ffffff;
+      --text-main: #4a3b32;
+      --text-light: #78716c;
+      --border-color: #e7e2dc;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; }
-    body { background-color: #fdfbf7; color: #4a3b32; padding-bottom: 60px; }
+    body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
     
-    /* 頂部導覽與購物車按鈕 */
+    /* 頂部導覽列 */
     header {
-      background-color: #ffffff;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      padding: 15px 20px;
+      background-color: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 20px rgba(74, 59, 50, 0.06);
+      padding: 16px 32px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -20,160 +33,207 @@
       top: 0;
       z-index: 100;
     }
-    .logo { font-size: 1.4rem; font-weight: bold; color: #8b5a2b; }
+    .logo-container { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .logo-icon { font-size: 1.8rem; }
+    .logo-text h1 { font-size: 1.3rem; font-weight: 700; color: var(--primary); letter-spacing: 1px; }
+    .logo-text p { font-size: 0.75rem; color: var(--text-light); }
+
     .cart-icon-btn {
       position: relative;
-      background: #8b5a2b;
+      background: var(--primary);
       color: white;
       border: none;
-      padding: 8px 16px;
-      border-radius: 20px;
+      padding: 10px 20px;
+      border-radius: 30px;
       cursor: pointer;
       font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s, transform 0.1s;
+      box-shadow: 0 4px 12px rgba(139, 90, 43, 0.2);
     }
+    .cart-icon-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
     .cart-badge {
       position: absolute;
       top: -6px;
       right: -6px;
-      background: #e74c3c;
+      background: var(--danger);
       color: white;
       border-radius: 50%;
-      padding: 2px 7px;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 0.75rem;
       font-weight: bold;
+      border: 2px solid white;
     }
 
-    .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+    .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; flex: 1; width: 100%; }
 
     /* 頁面切換控制 */
     .page { display: none; }
-    .page.active { display: block; }
+    .page.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* 甜點列表頁 - Flexbox 排版與 16px 間距 */
+    /* 頁面標題區 */
+    .section-header { text-align: center; margin-bottom: 30px; }
+    .section-header h2 { font-size: 2rem; color: var(--primary); margin-bottom: 8px; font-weight: 700; }
+    .section-header p { color: var(--text-light); font-size: 0.95rem; }
+
+    /* 甜點列表頁 - Flexbox 排版 */
     .product-grid {
       display: flex;
       flex-wrap: wrap;
-      justify-content: center; /* 水平置中對齊 */
-      gap: 16px;              /* 每個商品之間留 16px 間距 */
-      margin-top: 20px;
+      justify-content: center;
+      gap: 24px;
     }
 
     .product-card {
-      background: white;
-      border-radius: 12px;
+      background: var(--card-bg);
+      border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      box-shadow: 0 6px 20px rgba(74, 59, 50, 0.05);
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      text-align: center;
-      padding-bottom: 15px;
-      width: 220px;            /* 桌面版每張卡片固定寬度 */
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s;
+      text-align: left;
+      width: 240px;
       flex-shrink: 0;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
     }
 
-    .product-card:hover { transform: translateY(-5px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
-    .product-card img { width: 100%; height: 180px; object-fit: cover; }
-    .product-card h3 { font-size: 1.1rem; margin: 12px 0 6px; color: #333; }
-    .product-card .price { color: #c0392b; font-weight: bold; }
+    .product-card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(74, 59, 50, 0.12); }
+    .product-img-wrap { width: 100%; height: 180px; overflow: hidden; background: #eee; }
+    .product-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+    .product-card:hover img { transform: scale(1.05); }
+    
+    .product-content { padding: 16px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
+    .product-card h3 { font-size: 1.05rem; margin-bottom: 8px; color: var(--text-main); font-weight: 600; }
+    .product-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+    .product-card .price { color: #b91c1c; font-weight: 700; font-size: 1.1rem; }
+    .view-detail-hint { font-size: 0.8rem; color: var(--primary); font-weight: 600; }
 
     /* Media Query: 螢幕寬度小於 768px 時改為直向堆疊 */
     @media (max-width: 768px) {
-      .product-grid {
-        flex-direction: column; /* 改為直向堆疊 */
-        align-items: center;    /* 直向時居中 */
-      }
-      .product-card {
-        width: 100%;            /* 滿版寬度 */
-        max-width: 400px;       /* 限制最大寬度避免太寬 */
-      }
+      header { padding: 12px 16px; }
+      .product-grid { flex-direction: column; align-items: center; gap: 16px; }
+      .product-card { width: 100%; max-width: 380px; }
     }
 
     /* 商品詳情頁 */
     .detail-card {
-      background: white;
-      border-radius: 12px;
-      padding: 25px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      max-width: 600px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 35px;
+      box-shadow: 0 10px 30px rgba(74, 59, 50, 0.08);
+      max-width: 750px;
       margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      border: 1px solid var(--border-color);
     }
-    .detail-card img { width: 100%; height: 280px; object-fit: cover; border-radius: 8px; }
-    .detail-info { margin-top: 15px; }
-    .detail-info h2 { font-size: 1.5rem; margin-bottom: 8px; }
-    .detail-info .price { font-size: 1.25rem; color: #c0392b; font-weight: bold; margin-bottom: 15px; }
-    .detail-info p { font-size: 0.95rem; color: #666; margin-bottom: 8px; line-height: 1.5; }
+    @media (max-width: 768px) {
+      .detail-card { grid-template-columns: 1fr; padding: 20px; }
+    }
+    .detail-card img { width: 100%; height: 320px; object-fit: cover; border-radius: 12px; }
+    .detail-info { display: flex; flex-direction: column; justify-content: space-between; }
+    .detail-info h2 { font-size: 1.8rem; margin-bottom: 8px; color: var(--text-main); }
+    .detail-info .price { font-size: 1.4rem; color: #b91c1c; font-weight: bold; margin-bottom: 15px; }
+    .detail-info p { font-size: 0.95rem; color: var(--text-light); margin-bottom: 10px; line-height: 1.6; }
+    .detail-info strong { color: var(--text-main); }
     
     .option-group { margin: 15px 0; }
-    .option-group label { display: block; font-weight: bold; margin-bottom: 5px; }
+    .option-group label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem; color: var(--text-main); }
     .option-group select, .option-group input {
       width: 100%;
-      padding: 8px 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      padding: 10px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
       font-size: 0.95rem;
+      background: #fafafa;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.2s;
     }
+    .option-group select:focus, .option-group input:focus { border-color: var(--primary); background: #fff; }
 
-    /* 按鈕樣式 */
+    /* 通用按鈕樣式 */
     .btn {
       width: 100%;
-      background-color: #8b5a2b;
+      background-color: var(--primary);
       color: white;
       border: none;
-      padding: 12px;
-      border-radius: 6px;
+      padding: 14px;
+      border-radius: 10px;
       font-size: 1rem;
       cursor: pointer;
-      margin-top: 10px;
-      font-weight: bold;
+      margin-top: 15px;
+      font-weight: 600;
+      transition: background 0.2s, transform 0.1s;
+      box-shadow: 0 4px 12px rgba(139, 90, 43, 0.2);
     }
-    .btn:hover { background-color: #704720; }
-    .btn-secondary { background-color: #95a5a6; margin-top: 8px; }
-    .btn-secondary:hover { background-color: #7f8c8d; }
+    .btn:hover { background-color: var(--primary-dark); transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn-secondary { background-color: #cbd5e1; color: #334155; margin-top: 8px; box-shadow: none; }
+    .btn-secondary:hover { background-color: #94a3b8; }
 
     /* Modal 彈窗 (購物車 & 結帳) */
     .modal {
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
+      background: rgba(74, 59, 50, 0.5);
+      backdrop-filter: blur(4px);
       justify-content: center;
       align-items: center;
       z-index: 200;
+      padding: 15px;
     }
-    .modal.active { display: flex; }
+    .modal.active { display: flex; animation: fadeIn 0.2s ease-out; }
     .modal-content {
-      background: white;
-      width: 90%;
-      max-width: 500px;
-      border-radius: 12px;
-      padding: 20px;
-      max-height: 85vh;
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 520px;
+      border-radius: 20px;
+      padding: 24px;
+      max-height: 90vh;
       overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      border: 1px solid var(--border-color);
     }
     .modal-header {
-      font-size: 1.2rem;
-      font-weight: bold;
-      margin-bottom: 15px;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 10px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      color: var(--text-main);
     }
     .edit-toggle-btn {
-      background: none;
-      border: 1px solid #8b5a2b;
-      color: #8b5a2b;
-      padding: 4px 12px;
-      border-radius: 15px;
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      padding: 5px 14px;
+      border-radius: 20px;
       cursor: pointer;
       font-size: 0.85rem;
-      font-weight: bold;
+      font-weight: 600;
+      transition: all 0.2s;
     }
+    .edit-toggle-btn:hover { background: var(--primary); color: white; }
     .edit-toggle-btn.editing {
-      background: #e74c3c;
+      background: var(--danger);
       color: white;
-      border-color: #e74c3c;
+      border-color: var(--danger);
     }
     
     /* 購物車項目列表 */
@@ -181,65 +241,93 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px dashed #eee;
+      padding: 14px 0;
+      border-bottom: 1px dashed var(--border-color);
     }
-    .cart-item-info { font-size: 0.95rem; }
-    .cart-item-sub { font-size: 0.8rem; color: #888; margin-top: 2px; }
+    .cart-item-info { font-size: 0.95rem; font-weight: 600; color: var(--text-main); }
+    .cart-item-sub { font-size: 0.82rem; color: var(--text-light); margin-top: 3px; }
 
     /* 編輯控制按鈕 */
-    .qty-controls {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .qty-controls { display: flex; align-items: center; gap: 8px; }
     .qty-btn {
-      background: #f0f0f0;
-      border: 1px solid #ccc;
-      width: 28px;
-      height: 28px;
-      border-radius: 4px;
+      background: #f1f5f9;
+      border: 1px solid var(--border-color);
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
       display: flex;
       align-items: center;
       justify-content: center;
+      color: var(--text-main);
+      transition: background 0.2s;
     }
-    .qty-btn:hover { background: #e0e0e0; }
+    .qty-btn:hover { background: #e2e8f0; }
     .delete-item-btn {
-      background: #e74c3c;
-      color: white;
+      background: #fee2e2;
+      color: #991b1b;
       border: none;
-      padding: 4px 8px;
-      border-radius: 4px;
+      padding: 6px 10px;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 0.8rem;
-      margin-right: 8px;
+      font-weight: 600;
+      margin-right: 10px;
+      transition: background 0.2s;
     }
+    .delete-item-btn:hover { background: #fecaca; }
 
     /* 表單元件 */
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 4px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; color: var(--text-main); }
     .form-group input, .form-group select, .form-group textarea {
       width: 100%;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      padding: 10px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      background: #fafafa;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: var(--primary);
+      background: #fff;
     }
     .error-text {
-      color: #e74c3c;
+      color: var(--danger);
       font-size: 0.8rem;
-      margin-top: 4px;
+      margin-top: 5px;
       display: none;
+      font-weight: 500;
     }
-    .total-amount { font-size: 1.2rem; font-weight: bold; color: #c0392b; text-align: right; margin: 15px 0; }
+    .total-amount { font-size: 1.3rem; font-weight: 700; color: #b91c1c; text-align: right; margin: 20px 0; }
+
+    /* 頁尾 */
+    footer {
+      background: #ffffff;
+      border-top: 1px solid var(--border-color);
+      text-align: center;
+      padding: 20px;
+      color: var(--text-light);
+      font-size: 0.85rem;
+      margin-top: auto;
+    }
   </style>
 </head>
 <body>
 
   <!-- 頂部導覽列 -->
   <header>
-    <div class="logo">🍰 精緻甜點工坊</div>
+    <div class="logo-container" onclick="showPage('pageList')">
+      <span class="logo-icon">🍰</span>
+      <div class="logo-text">
+        <h1>Maison de Dessert</h1>
+        <p>手工法式甜點專門店</p>
+      </div>
+    </div>
     <button class="cart-icon-btn" onclick="openCartModal()">
       🛒 購物車 <span class="cart-badge" id="cartBadge">0</span>
     </button>
@@ -248,38 +336,47 @@
   <div class="container">
     <!-- 頁面 1: 甜點展示頁 -->
     <div id="pageList" class="page active">
-      <h2 style="margin-bottom: 15px; text-align: center;">精選甜點列表</h2>
+      <div class="section-header">
+        <h2>精選甜點系列</h2>
+        <p>嚴選頂級進口食材，每日手工限量製作，滿足您的甜點味蕾</p>
+      </div>
       <div class="product-grid" id="productGrid"></div>
     </div>
 
     <!-- 頁面 2: 商品詳情頁 -->
     <div id="pageDetail" class="page">
-      <button class="btn btn-secondary" style="width: auto; margin-bottom: 15px;" onclick="showPage('pageList')">← 返回甜點列表</button>
+      <button class="btn btn-secondary" style="width: auto; padding: 8px 16px; margin-bottom: 20px; font-size: 0.9rem;" onclick="showPage('pageList')">← 返回甜點列表</button>
       <div class="detail-card">
-        <img id="detailImg" src="" alt="甜點圖片" />
+        <div>
+          <img id="detailImg" src="" alt="甜點圖片" />
+        </div>
         <div class="detail-info">
-          <h2 id="detailName"></h2>
-          <div class="price" id="detailPrice"></div>
-          <p><strong>介紹：</strong><span id="detailDesc"></span></p>
-          <p><strong>口味：</strong><span id="detailFlavor"></span></p>
-          <p><strong>過敏原資訊：</strong><span id="detailAllergen"></span></p>
+          <div>
+            <h2 id="detailName"></h2>
+            <div class="price" id="detailPrice"></div>
+            <p><strong>介紹：</strong><span id="detailDesc"></span></p>
+            <p><strong>口味特色：</strong><span id="detailFlavor"></span></p>
+            <p><strong>過敏原資訊：</strong><span id="detailAllergen"></span></p>
+          </div>
           
-          <!-- 蛋糕類專用尺寸選擇 -->
-          <div class="option-group" id="sizeGroup" style="display: none;">
-            <label for="detailSize">選擇尺寸：</label>
-            <select id="detailSize">
-              <option value="6吋">6 吋</option>
-              <option value="8吋 (+300元)">8 吋 (+300元)</option>
-            </select>
-          </div>
+          <div>
+            <!-- 蛋糕類專用尺寸選擇 -->
+            <div class="option-group" id="sizeGroup" style="display: none;">
+              <label for="detailSize">選擇尺寸：</label>
+              <select id="detailSize">
+                <option value="6吋">6 吋 (標準)</option>
+                <option value="8吋 (+300元)">8 吋 (升級 +300元)</option>
+              </select>
+            </div>
 
-          <!-- 數量選擇 -->
-          <div class="option-group">
-            <label for="detailQty">數量：</label>
-            <input type="number" id="detailQty" value="1" min="1" max="99" />
-          </div>
+            <!-- 數量選擇 -->
+            <div class="option-group">
+              <label for="detailQty">數量：</label>
+              <input type="number" id="detailQty" value="1" min="1" max="99" />
+            </div>
 
-          <button class="btn" onclick="addToCart()">[加入購物車]</button>
+            <button class="btn" onclick="addToCart()">[加入購物車]</button>
+          </div>
         </div>
       </div>
     </div>
@@ -295,7 +392,7 @@
       <div id="cartItemsContainer"></div>
       
       <!-- 一般模式下顯示【確定】按鈕 -->
-      <button class="btn" id="cartConfirmBtn" style="margin-top: 15px;" onclick="openCheckoutModal()">[確定]</button>
+      <button class="btn" id="cartConfirmBtn" style="margin-top: 20px;" onclick="openCheckoutModal()">[確定]</button>
       <button class="btn btn-secondary" onclick="closeModal('cartModal')">繼續購物</button>
     </div>
   </div>
@@ -304,12 +401,12 @@
   <div class="modal" id="checkoutModal">
     <div class="modal-content">
       <div class="modal-header">
-        <span>填寫訂購資料</span>
+        <span>填寫訂購與配送資料</span>
       </div>
       <form id="checkoutForm" onsubmit="submitOrder(event)">
         <div class="form-group">
           <label>姓名 *</label>
-          <input type="text" id="custName" required placeholder="請輸入姓名" />
+          <input type="text" id="custName" required placeholder="請輸入收件人姓名" />
         </div>
         <div class="form-group">
           <label>手機 *</label>
@@ -335,10 +432,10 @@
         </div>
         <div class="form-group">
           <label>備註</label>
-          <textarea id="custNote" rows="2" placeholder="特殊需求或注意事項..."></textarea>
+          <textarea id="custNote" rows="2" placeholder="特殊需求、忌口或祝賀卡片內容..."></textarea>
         </div>
 
-        <div class="total-amount" id="checkoutTotal">應付金額：$0</div>
+        <div class="total-amount" id="checkoutTotal">應付金額：NT$ 0</div>
 
         <button type="submit" class="btn">[送出訂單]</button>
         <button type="button" class="btn btn-secondary" onclick="closeModal('checkoutModal')">返回購物車</button>
@@ -346,15 +443,20 @@
     </div>
   </div>
 
+  <!-- 頁尾 -->
+  <footer>
+    <p>&copy; 2026 Maison de Dessert 手工法式甜點工坊. All Rights Reserved.</p>
+  </footer>
+
   <script>
     // 8款甜點資料集
     const products = [
-      { id: 1, name: "經典草莓法式蛋糕", price: 680, category: "cake", img: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=500&q=80", desc: "嚴選新鮮草莓搭配香濃卡士達醬，經典必吃口感。", flavor: "草莓香甜", allergen: "小麥、牛奶、蛋" },
-      { id: 2, name: "濃郁苦甜巧克力蛋糕", price: 720, category: "cake", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=500&q=80", desc: "採用 70% 法國黑巧克力，甜而不膩且極致滑順。", flavor: "苦甜濃郁", allergen: "小麥、牛奶、蛋、堅果" },
-      { id: 3, name: "日式宇治抹茶千層蛋糕", price: 750, category: "cake", img: "https://images.unsplash.com/photo-1535141192574-5d4897c13136?auto=format&fit=crop&w=500&q=80", desc: "20層手工煎餅堆疊，滿滿的京都宇治抹茶香氣。", flavor: "回甘抹茶", allergen: "小麥、牛奶、蛋" },
+      { id: 1, name: "經典草莓法式蛋糕", price: 680, category: "cake", img: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=500&q=80", desc: "嚴選新鮮大湖草莓搭配香濃卡士達醬，經典必吃口感。", flavor: "草莓香甜", allergen: "小麥、牛奶、蛋" },
+      { id: 2, name: "濃郁苦甜巧克力蛋糕", price: 720, category: "cake", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=500&q=80", desc: "採用 70% 法國法芙娜黑巧克力，甜而不膩且極致滑順。", flavor: "苦甜濃郁", allergen: "小麥、牛奶、蛋、堅果" },
+      { id: 3, name: "日式宇治抹茶千層蛋糕", price: 750, category: "cake", img: "https://images.unsplash.com/photo-1535141192574-5d4897c13136?auto=format&fit=crop&w=500&q=80", desc: "20層手工法式薄餅堆疊，滿滿的京都宇治抹茶香氣。", flavor: "回甘抹茶", allergen: "小麥、牛奶、蛋" },
       { id: 4, name: "巴斯克焦香起司蛋糕", price: 600, category: "cake", img: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=500&q=80", desc: "表面帶有濃郁焦香味，內部質地綿密軟濡。", flavor: "重乳酪香", allergen: "牛奶、蛋" },
-      { id: 5, name: "法式繽紛馬卡龍禮盒", price: 450, category: "other", img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?auto=format&fit=crop&w=500&q=80", desc: "一盒6入，外酥內軟的少女酥胸口感。", flavor: "綜合水果與巧克力", allergen: "蛋白、杏仁粉" },
-      { id: 6, name: "焦糖瑪奇朵水果塔", price: 180, category: "other", img: "https://images.unsplash.com/photo-1519869325930-281384150729?auto=format&fit=crop&w=500&q=80", desc: "酥脆塔皮搭配特調焦糖與季節新鮮水果。", flavor: "果香酸甜", allergen: "小麥、牛奶、蛋" },
+      { id: 5, name: "法式繽紛馬卡龍禮盒", price: 450, category: "other", img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?auto=format&fit=crop&w=500&q=80", desc: "一盒6入，外酥內軟的少女酥胸精緻口感。", flavor: "綜合水果與巧克力", allergen: "蛋白、杏仁粉" },
+      { id: 6, name: "焦糖瑪奇朵水果塔", price: 180, category: "other", img: "https://images.unsplash.com/photo-1519869325930-281384150729?auto=format&fit=crop&w=500&q=80", desc: "酥脆奶油塔皮搭配特調焦糖與季節新鮮水果。", flavor: "果香酸甜", allergen: "小麥、牛奶、蛋" },
       { id: 7, name: "義式香濃提拉米蘇", price: 220, category: "other", img: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=500&q=80", desc: "吸滿濃縮咖啡與馬斯卡彭起司的完美交融。", flavor: "咖啡與酒香", allergen: "牛奶、蛋、微量酒精" },
       { id: 8, name: "手作香草可麗露", price: 120, category: "other", img: "https://images.unsplash.com/photo-1621236378699-8597faf6a176?auto=format&fit=crop&w=500&q=80", desc: "外層脆口焦糖，內部如蜂巢般Q彈綿密。", flavor: "香草焦糖", allergen: "小麥、牛奶、蛋、朗姆酒" }
     ];
@@ -367,9 +469,16 @@
       const grid = document.getElementById('productGrid');
       grid.innerHTML = products.map(p => `
         <div class="product-card" onclick="openDetail(${p.id})">
-          <img src="${p.img}" alt="${p.name}">
-          <h3>${p.name}</h3>
-          <div class="price">NT$ ${p.price}</div>
+          <div class="product-img-wrap">
+            <img src="${p.img}" alt="${p.name}">
+          </div>
+          <div class="product-content">
+            <h3>${p.name}</h3>
+            <div class="product-footer">
+              <span class="price">NT$ ${p.price}</span>
+              <span class="view-detail-hint">查看詳情 →</span>
+            </div>
+          </div>
         </div>
       `).join('');
     }
@@ -377,6 +486,7 @@
     function showPage(pageId) {
       document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
       document.getElementById(pageId).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function openDetail(productId) {
@@ -472,7 +582,7 @@
       }
 
       if (cart.length === 0) {
-        container.innerHTML = '<div style="text-align:center; padding: 20px; color: #888;">購物車內已無商品</div>';
+        container.innerHTML = '<div style="text-align:center; padding: 25px; color: #888;">購物車內已無商品</div>';
         confirmBtn.style.display = 'none';
         editBtn.style.display = 'none';
         return;
@@ -487,7 +597,7 @@
               <div style="display:flex; align-items:center;">
                 <button class="delete-item-btn" onclick="removeItem(${index})">🗑️ 移除</button>
                 <div>
-                  <div class="cart-item-info"><strong>${item.name}</strong></div>
+                  <div class="cart-item-info">${item.name}</div>
                   <div class="cart-item-sub">規格: ${item.size} | 單價: $${item.price}</div>
                 </div>
               </div>
@@ -502,10 +612,10 @@
           return `
             <div class="cart-item">
               <div>
-                <div class="cart-item-info"><strong>${item.name}</strong></div>
+                <div class="cart-item-info">${item.name}</div>
                 <div class="cart-item-sub">規格: ${item.size} | 單價: $${item.price}</div>
               </div>
-              <div>x ${item.qty}</div>
+              <div style="font-weight: 600;">x ${item.qty}</div>
             </div>
           `;
         }
@@ -533,13 +643,10 @@
       }
     }
 
-    // 手機格式即時驗證函數
     function validatePhone() {
       const phoneInput = document.getElementById('custPhone');
       const errorDiv = document.getElementById('phoneError');
       const phoneVal = phoneInput.value.trim();
-      
-      // 正則表達式：必須是 09 開頭，後面接著 8 位數字 (總共 10 碼)
       const phoneRegex = /^09\d{8}$/;
 
       if (phoneVal === "") {
@@ -560,7 +667,6 @@
       if (cart.length === 0) return alert('購物車內無商品！');
       closeModal('cartModal');
       
-      // 重置表單與驗證紅字
       document.getElementById('checkoutForm').reset();
       document.getElementById('phoneError').style.display = 'none';
 
@@ -577,7 +683,6 @@
     function submitOrder(e) {
       e.preventDefault();
 
-      // 送出前再次檢查手機格式
       if (!validatePhone()) {
         alert('請填寫正確的手機格式（09開頭之10碼數字）！');
         document.getElementById('custPhone').focus();
