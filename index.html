@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Maison de Dessert | 精緻法式甜點工坊</title>
+  <title>墨光行旅 | 獨立書店與手帳文具舖</title>
   <style>
     :root {
-      --primary: #8b5a2b;
-      --primary-dark: #6f4520;
-      --accent: #d97706;
-      --danger: #e74c3c;
-      --bg-color: #faf7f2;
+      --primary: #2c3e50;
+      --primary-dark: #1a252f;
+      --accent: #d35400;
+      --danger: #c0392b;
+      --bg-color: #f5f3ef;
       --card-bg: #ffffff;
-      --text-main: #4a3b32;
-      --text-light: #78716c;
-      --border-color: #e7e2dc;
+      --text-main: #2c3e50;
+      --text-light: #7f8c8d;
+      --border-color: #dcdde1;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; }
@@ -24,7 +24,7 @@
     header {
       background-color: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(8px);
-      box-shadow: 0 4px 20px rgba(74, 59, 50, 0.06);
+      box-shadow: 0 4px 20px rgba(44, 62, 80, 0.06);
       padding: 16px 32px;
       display: flex;
       justify-content: space-between;
@@ -52,7 +52,7 @@
       align-items: center;
       gap: 6px;
       transition: background 0.2s, transform 0.1s;
-      box-shadow: 0 4px 12px rgba(139, 90, 43, 0.2);
+      box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
     }
     .cart-icon-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
     .cart-badge {
@@ -84,7 +84,7 @@
     .section-header h2 { font-size: 2rem; color: var(--primary); margin-bottom: 8px; font-weight: 700; }
     .section-header p { color: var(--text-light); font-size: 0.95rem; }
 
-    /* 甜點列表頁 - Flexbox 排版 */
+    /* 選品列表頁 - Flexbox 排版 */
     .product-grid {
       display: flex;
       flex-wrap: wrap;
@@ -94,9 +94,9 @@
 
     .product-card {
       background: var(--card-bg);
-      border-radius: 16px;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 6px 20px rgba(74, 59, 50, 0.05);
+      box-shadow: 0 6px 20px rgba(44, 62, 80, 0.05);
       cursor: pointer;
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s;
       text-align: left;
@@ -107,7 +107,7 @@
       flex-direction: column;
     }
 
-    .product-card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(74, 59, 50, 0.12); }
+    .product-card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(44, 62, 80, 0.12); }
     .product-img-wrap { width: 100%; height: 180px; overflow: hidden; background: #eee; }
     .product-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
     .product-card:hover img { transform: scale(1.05); }
@@ -115,7 +115,7 @@
     .product-content { padding: 16px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
     .product-card h3 { font-size: 1.05rem; margin-bottom: 8px; color: var(--text-main); font-weight: 600; }
     .product-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-    .product-card .price { color: #b91c1c; font-weight: 700; font-size: 1.1rem; }
+    .product-card .price { color: var(--accent); font-weight: 700; font-size: 1.1rem; }
     .view-detail-hint { font-size: 0.8rem; color: var(--primary); font-weight: 600; }
 
     /* Media Query: 螢幕寬度小於 768px 時改為直向堆疊 */
@@ -128,9 +128,9 @@
     /* 商品詳情頁 */
     .detail-card {
       background: var(--card-bg);
-      border-radius: 20px;
+      border-radius: 16px;
       padding: 35px;
-      box-shadow: 0 10px 30px rgba(74, 59, 50, 0.08);
+      box-shadow: 0 10px 30px rgba(44, 62, 80, 0.08);
       max-width: 750px;
       margin: 0 auto;
       display: grid;
@@ -141,10 +141,10 @@
     @media (max-width: 768px) {
       .detail-card { grid-template-columns: 1fr; padding: 20px; }
     }
-    .detail-card img { width: 100%; height: 320px; object-fit: cover; border-radius: 12px; }
+    .detail-card img { width: 100%; height: 320px; object-fit: cover; border-radius: 10px; }
     .detail-info { display: flex; flex-direction: column; justify-content: space-between; }
     .detail-info h2 { font-size: 1.8rem; margin-bottom: 8px; color: var(--text-main); }
-    .detail-info .price { font-size: 1.4rem; color: #b91c1c; font-weight: bold; margin-bottom: 15px; }
+    .detail-info .price { font-size: 1.4rem; color: var(--accent); font-weight: bold; margin-bottom: 15px; }
     .detail-info p { font-size: 0.95rem; color: var(--text-light); margin-bottom: 10px; line-height: 1.6; }
     .detail-info strong { color: var(--text-main); }
     
@@ -170,25 +170,25 @@
       color: white;
       border: none;
       padding: 14px;
-      border-radius: 10px;
+      border-radius: 8px;
       font-size: 1rem;
       cursor: pointer;
       margin-top: 15px;
       font-weight: 600;
       transition: background 0.2s, transform 0.1s;
-      box-shadow: 0 4px 12px rgba(139, 90, 43, 0.2);
+      box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
     }
     .btn:hover { background-color: var(--primary-dark); transform: translateY(-1px); }
     .btn:active { transform: translateY(0); }
-    .btn-secondary { background-color: #cbd5e1; color: #334155; margin-top: 8px; box-shadow: none; }
-    .btn-secondary:hover { background-color: #94a3b8; }
+    .btn-secondary { background-color: #b2bec3; color: #2d3436; margin-top: 8px; box-shadow: none; }
+    .btn-secondary:hover { background-color: #636e72; }
 
     /* Modal 彈窗 (購物車 & 結帳) */
     .modal {
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(74, 59, 50, 0.5);
+      background: rgba(44, 62, 80, 0.5);
       backdrop-filter: blur(4px);
       justify-content: center;
       align-items: center;
@@ -200,7 +200,7 @@
       background: var(--card-bg);
       width: 100%;
       max-width: 520px;
-      border-radius: 20px;
+      border-radius: 16px;
       padding: 24px;
       max-height: 90vh;
       overflow-y: auto;
@@ -303,7 +303,7 @@
       display: none;
       font-weight: 500;
     }
-    .total-amount { font-size: 1.3rem; font-weight: 700; color: #b91c1c; text-align: right; margin: 20px 0; }
+    .total-amount { font-size: 1.3rem; font-weight: 700; color: var(--accent); text-align: right; margin: 20px 0; }
 
     /* 頁尾 */
     footer {
@@ -322,10 +322,10 @@
   <!-- 頂部導覽列 -->
   <header>
     <div class="logo-container" onclick="showPage('pageList')">
-      <span class="logo-icon">🍰</span>
+      <span class="logo-icon">📚</span>
       <div class="logo-text">
-        <h1>Maison de Dessert</h1>
-        <p>手工法式甜點專門店</p>
+        <h1>墨光行旅</h1>
+        <p>獨立書店與手帳文具舖</p>
       </div>
     </div>
     <button class="cart-icon-btn" onclick="openCartModal()">
@@ -334,38 +334,38 @@
   </header>
 
   <div class="container">
-    <!-- 頁面 1: 甜點展示頁 -->
+    <!-- 頁面 1: 選品展示頁 -->
     <div id="pageList" class="page active">
       <div class="section-header">
-        <h2>精選甜點系列</h2>
-        <p>嚴選頂級進口食材，每日手工限量製作，滿足您的甜點味蕾</p>
+        <h2>獨立出版與精選文具</h2>
+        <p>在文字與紙香中尋找生活靈感，品味細緻的手帳時光</p>
       </div>
       <div class="product-grid" id="productGrid"></div>
     </div>
 
     <!-- 頁面 2: 商品詳情頁 -->
     <div id="pageDetail" class="page">
-      <button class="btn btn-secondary" style="width: auto; padding: 8px 16px; margin-bottom: 20px; font-size: 0.9rem;" onclick="showPage('pageList')">← 返回甜點列表</button>
+      <button class="btn btn-secondary" style="width: auto; padding: 8px 16px; margin-bottom: 20px; font-size: 0.9rem;" onclick="showPage('pageList')">← 返回選品列表</button>
       <div class="detail-card">
         <div>
-          <img id="detailImg" src="" alt="甜點圖片" />
+          <img id="detailImg" src="" alt="商品圖片" />
         </div>
         <div class="detail-info">
           <div>
             <h2 id="detailName"></h2>
             <div class="price" id="detailPrice"></div>
-            <p><strong>介紹：</strong><span id="detailDesc"></span></p>
-            <p><strong>口味特色：</strong><span id="detailFlavor"></span></p>
-            <p><strong>過敏原資訊：</strong><span id="detailAllergen"></span></p>
+            <p><strong>內容介紹：</strong><span id="detailDesc"></span></p>
+            <p><strong>風格特色：</strong><span id="detailFlavor"></span></p>
+            <p><strong>材質與規格：</strong><span id="detailAllergen"></span></p>
           </div>
           
           <div>
-            <!-- 蛋糕類專用尺寸選擇 -->
+            <!-- 書本/本子類專用尺寸與規格選擇 -->
             <div class="option-group" id="sizeGroup" style="display: none;">
-              <label for="detailSize">選擇尺寸：</label>
+              <label for="detailSize">選擇規格/尺寸：</label>
               <select id="detailSize">
-                <option value="6吋">6 吋 (標準)</option>
-                <option value="8吋 (+300元)">8 吋 (升級 +300元)</option>
+                <option value="A5 標準款">A5 標準款</option>
+                <option value="A6 隨身便攜款 (-100元)">A6 隨身便攜款 (-100元)</option>
               </select>
             </div>
 
@@ -393,7 +393,7 @@
       
       <!-- 一般模式下顯示【確定】按鈕 -->
       <button class="btn" id="cartConfirmBtn" style="margin-top: 20px;" onclick="openCheckoutModal()">[確定]</button>
-      <button class="btn btn-secondary" onclick="closeModal('cartModal')">繼續購物</button>
+      <button class="btn btn-secondary" onclick="closeModal('cartModal')">繼續選購</button>
     </div>
   </div>
 
@@ -414,12 +414,12 @@
           <div id="phoneError" class="error-text">手機格式錯誤，必須為 09 開頭之 10 碼數字</div>
         </div>
         <div class="form-group">
-          <label>領貨日期與時間 *</label>
+          <label>領貨/取件日期與時間 *</label>
           <input type="datetime-local" id="custPickupTime" required />
         </div>
         <div class="form-group">
-          <label>外送地址 *</label>
-          <input type="text" id="custAddress" required placeholder="請輸入完整外送地址" />
+          <label>外送/收件地址 *</label>
+          <input type="text" id="custAddress" required placeholder="請輸入完整收件地址" />
         </div>
         <div class="form-group">
           <label>付款方式 *</label>
@@ -432,7 +432,7 @@
         </div>
         <div class="form-group">
           <label>備註</label>
-          <textarea id="custNote" rows="2" placeholder="特殊需求、忌口或祝賀卡片內容..."></textarea>
+          <textarea id="custNote" rows="2" placeholder="特殊包裝需求或指定注意事項..."></textarea>
         </div>
 
         <div class="total-amount" id="checkoutTotal">應付金額：NT$ 0</div>
@@ -445,20 +445,20 @@
 
   <!-- 頁尾 -->
   <footer>
-    <p>&copy; 2026 Maison de Dessert 手工法式甜點工坊. All Rights Reserved.</p>
+    <p>&copy; 2026 墨光行旅 獨立書店與手帳文具舖. All Rights Reserved.</p>
   </footer>
 
   <script>
-    // 8款甜點資料集
+    // 8款獨立書店與文具選品資料集（書籍類可選擇尺寸/規格）
     const products = [
-      { id: 1, name: "經典草莓法式蛋糕", price: 680, category: "cake", img: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=500&q=80", desc: "嚴選新鮮大湖草莓搭配香濃卡士達醬，經典必吃口感。", flavor: "草莓香甜", allergen: "小麥、牛奶、蛋" },
-      { id: 2, name: "濃郁苦甜巧克力蛋糕", price: 720, category: "cake", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=500&q=80", desc: "採用 70% 法國法芙娜黑巧克力，甜而不膩且極致滑順。", flavor: "苦甜濃郁", allergen: "小麥、牛奶、蛋、堅果" },
-      { id: 3, name: "日式宇治抹茶千層蛋糕", price: 750, category: "cake", img: "https://images.unsplash.com/photo-1535141192574-5d4897c13136?auto=format&fit=crop&w=500&q=80", desc: "20層手工法式薄餅堆疊，滿滿的京都宇治抹茶香氣。", flavor: "回甘抹茶", allergen: "小麥、牛奶、蛋" },
-      { id: 4, name: "巴斯克焦香起司蛋糕", price: 600, category: "cake", img: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=500&q=80", desc: "表面帶有濃郁焦香味，內部質地綿密軟濡。", flavor: "重乳酪香", allergen: "牛奶、蛋" },
-      { id: 5, name: "法式繽紛馬卡龍禮盒", price: 450, category: "other", img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?auto=format&fit=crop&w=500&q=80", desc: "一盒6入，外酥內軟的少女酥胸精緻口感。", flavor: "綜合水果與巧克力", allergen: "蛋白、杏仁粉" },
-      { id: 6, name: "焦糖瑪奇朵水果塔", price: 180, category: "other", img: "https://images.unsplash.com/photo-1519869325930-281384150729?auto=format&fit=crop&w=500&q=80", desc: "酥脆奶油塔皮搭配特調焦糖與季節新鮮水果。", flavor: "果香酸甜", allergen: "小麥、牛奶、蛋" },
-      { id: 7, name: "義式香濃提拉米蘇", price: 220, category: "other", img: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=500&q=80", desc: "吸滿濃縮咖啡與馬斯卡彭起司的完美交融。", flavor: "咖啡與酒香", allergen: "牛奶、蛋、微量酒精" },
-      { id: 8, name: "手作香草可麗露", price: 120, category: "other", img: "https://images.unsplash.com/photo-1621236378699-8597faf6a176?auto=format&fit=crop&w=500&q=80", desc: "外層脆口焦糖，內部如蜂巢般Q彈綿密。", flavor: "香草焦糖", allergen: "小麥、牛奶、蛋、朗姆酒" }
+      { id: 1, name: "《日常的微光》獨立攝影散文集", price: 580, category: "book", img: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80", desc: "記錄城市角落與溫柔日常的獨立出版攝影集，附作者親簽藏書票。", flavor: "文藝、日常、溫暖", allergen: "100g 貝原紙、精裝本" },
+      { id: 2, name: "手作布封皮一日一頁手帳本", price: 720, category: "book", img: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=500&q=80", desc: "採用日本巴川紙，180度完全攤平，適合鋼筆書寫不暈染。", flavor: "沉穩、實用、手感", allergen: "52g 巴川紙、布面精裝" },
+      { id: 3, name: "《漫遊山林》詩文插畫選集", price: 450, category: "book", img: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=500&q=80", desc: "結合山林自然詩作與細膩水彩插畫的獨立Zine小誌。", flavor: "清新、療癒、自然", allergen: "厚磅美術紙、騎馬釘" },
+      { id: 4, name: "復古皮革日誌與筆記本", price: 650, category: "book", img: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=500&q=80", desc: "義大利植鞣革手工製作外皮，內頁可替換式活頁設計。", flavor: "復古、率性、經久耐用", allergen: "植鞣牛皮、道林紙" },
+      { id: 5, name: "真鍮黃銅製復古書籤筆組", price: 320, category: "other", img: "https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?auto=format&fit=crop&w=500&q=80", desc: "越用越有歲月痕跡的黃銅書籤，兼具書寫與夾書功能。", flavor: "金屬質感、經年變化", allergen: "純黃銅材質" },
+      { id: 6, name: "植鞣革手工鋼筆筆套", price: 380, category: "other", img: "https://images.unsplash.com/photo-1585336261022-6fc46059c402?auto=format&fit=crop&w=500&q=80", desc: "保護心愛鋼筆的隨身皮革筆套，職人手縫質感。", flavor: "職人工藝、溫潤手感", allergen: "頭層牛皮、蠟線" },
+      { id: 7, name: "森林系和紙膠帶分裝禮盒", price: 280, category: "other", img: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=500&q=80", desc: "內含6款原創手繪森林與花草主題和紙膠帶，手帳裝飾必備。", flavor: "手帳拼貼、自然系", allergen: "和紙、特殊油墨" },
+      { id: 8, name: "復古木質印章與印泥組", price: 420, category: "other", img: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=500&q=80", desc: "經典排版日期與圖騰木章，為手帳蓋上細緻的時光印記。", flavor: "復古儀式感", allergen: "櫸木、橡膠、植物油印泥" }
     ];
 
     let currentProduct = null;
@@ -500,8 +500,9 @@
       document.getElementById('detailAllergen').innerText = currentProduct.allergen;
       document.getElementById('detailQty').value = 1;
 
+      // 書本/手帳類顯示尺寸/規格選項
       const sizeGroup = document.getElementById('sizeGroup');
-      if (currentProduct.category === 'cake') {
+      if (currentProduct.category === 'book') {
         sizeGroup.style.display = 'block';
       } else {
         sizeGroup.style.display = 'none';
@@ -517,13 +518,13 @@
       let size = "無";
       let unitPrice = currentProduct.price;
 
-      if (currentProduct.category === 'cake') {
+      if (currentProduct.category === 'book') {
         const sizeVal = document.getElementById('detailSize').value;
-        if (sizeVal.includes('8吋')) {
-          size = '8吋';
-          unitPrice += 300;
+        if (sizeVal.includes('A6')) {
+          size = 'A6 隨身便攜款';
+          unitPrice -= 100;
         } else {
-          size = '6吋';
+          size = 'A5 標準款';
         }
       }
 
