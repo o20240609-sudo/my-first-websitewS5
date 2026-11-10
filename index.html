@@ -236,7 +236,7 @@
     .product-card .price { color: var(--accent); font-weight: 700; font-size: 1.1rem; }
     .view-detail-hint { font-size: 0.8rem; color: var(--primary); font-weight: 600; }
 
-    /* Media Query: 螢幕寬度小於 768px */
+    /* Media Query */
     @media (max-width: 768px) {
       header { padding: 12px 16px; flex-direction: column; gap: 12px; }
       .header-right { width: 100%; justify-content: center; }
@@ -267,16 +267,36 @@
     .detail-info p { font-size: 0.95rem; color: var(--text-light); margin-bottom: 10px; line-height: 1.6; }
     .detail-info strong { color: var(--text-main); }
     
+    /* API 推薦與互動點讚區塊 */
     .api-quote-box {
       background: #f8f9fa;
       border-left: 3px solid var(--primary);
-      padding: 10px 14px;
+      padding: 12px 14px;
       border-radius: 4px;
       font-size: 0.88rem;
-      color: #555;
+      color: #444;
       margin-bottom: 15px;
-      font-style: italic;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
+    .quote-content { font-style: italic; }
+    .like-quote-btn {
+      align-self: flex-end;
+      background: #eef2f7;
+      border: 1px solid #cbd5e1;
+      padding: 4px 10px;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--primary);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .like-quote-btn:hover { background: #dfe7ef; transform: scale(1.05); }
 
     .option-group { margin: 15px 0; }
     .option-group label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem; color: var(--text-main); }
@@ -407,11 +427,7 @@
     .progress-bar-fill { background: var(--success); height: 100%; width: 0%; transition: width 0.3s; }
 
     /* 折扣碼區塊 */
-    .coupon-box {
-      display: flex;
-      gap: 8px;
-      margin: 15px 0;
-    }
+    .coupon-box { display: flex; gap: 8px; margin: 15px 0; }
     .coupon-input {
       flex: 1;
       padding: 8px 12px;
@@ -534,7 +550,15 @@
           <div>
             <h2 id="detailName"></h2>
             <div class="price" id="detailPrice"></div>
-            <div id="detailQuote" class="api-quote-box" style="display: none;"></div>
+            
+            <!-- API 串接讀者推薦與互動點讚 -->
+            <div id="detailQuoteBox" class="api-quote-box" style="display: none;">
+              <span id="detailQuoteText" class="quote-content"></span>
+              <button class="like-quote-btn" id="likeQuoteBtn" onclick="likeCurrentQuote()">
+                👍 實用 <span id="quoteLikeCount">0</span>
+              </button>
+            </div>
+
             <p><strong>內容介紹：</strong><span id="detailDesc"></span></p>
             <p><strong>風格特色：</strong><span id="detailFlavor"></span></p>
             <p><strong>材質與規格：</strong><span id="detailAllergen"></span></p>
@@ -583,7 +607,7 @@
     </div>
   </div>
 
-  <!-- 會員登入 / 註冊 Modal -->
+  <!-- 會員登入 Modal -->
   <div class="modal" id="authModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -621,7 +645,6 @@
         <button id="editCartBtn" class="edit-toggle-btn" onclick="toggleEditCart()">[編輯]</button>
       </div>
 
-      <!-- 免運進度條 -->
       <div class="shipping-progress-container">
         <div class="shipping-text" id="shippingProgressText">滿 NT$ 1,000 享免運優惠！</div>
         <div class="progress-bar-bg">
@@ -674,7 +697,6 @@
           <textarea id="custNote" rows="2" placeholder="特殊包裝需求或指定注意事項..."></textarea>
         </div>
 
-        <!-- 優惠券區塊 -->
         <div class="form-group">
           <label>輸入折扣碼 (測試碼: BOOK100 / WELCOME)</label>
           <div class="coupon-box">
@@ -698,7 +720,6 @@
   </footer>
 
   <script>
-    // 12 款選品資料
     const products = [
       { id: 1, name: "《日常的微光》獨立攝影散文集", price: 580, category: "book", img: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80", desc: "記錄城市角落與溫柔日常的獨立出版攝影集，附作者親簽藏書票。", flavor: "文藝、日常、溫暖", allergen: "100g 貝原紙、精裝本" },
       { id: 2, name: "《漫遊山林》詩文插畫選集", price: 450, category: "book", img: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=500&q=80", desc: "結合山林自然詩作與細膩水彩插畫的獨立Zine小誌。", flavor: "清新、療癒、自然", allergen: "厚磅美術紙、騎馬釘" },
@@ -714,26 +735,26 @@
       { id: 12, name: "植栽香氛蠟燭 (書香與白茶)", price: 480, category: "goods", img: "https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&w=500&q=80", desc: "點燃後散發淡淡舊書紙香與白茶香氣，陪伴您靜心閱讀的夜晚。", flavor: "療癒、沈靜、香氛", allergen: "大豆蠟、天然精油" }
     ];
 
-    // 全域變數狀態與 LocalStorage 整合
     let currentProduct = null;
     let cart = JSON.parse(localStorage.getItem('mb_cart')) || [];
     let favorites = JSON.parse(localStorage.getItem('mb_favorites')) || [];
     let orders = JSON.parse(localStorage.getItem('mb_orders')) || [];
     let currentUser = JSON.parse(localStorage.getItem('mb_user')) || null;
-    let readerQuotes = {}; 
+    let readerQuotes = JSON.parse(localStorage.getItem('mb_quotes')) || {}; 
+    let quoteLikes = JSON.parse(localStorage.getItem('mb_quote_likes')) || {}; // 點讚紀錄
     let isEditingCart = false;
     let currentCategory = 'all';
-    let appliedDiscount = 0; // 折扣金額
+    let appliedDiscount = 0;
 
-    // 儲存狀態至 LocalStorage
     function saveData() {
       localStorage.setItem('mb_cart', JSON.stringify(cart));
       localStorage.setItem('mb_favorites', JSON.stringify(favorites));
       localStorage.setItem('mb_orders', JSON.stringify(orders));
       localStorage.setItem('mb_user', JSON.stringify(currentUser));
+      localStorage.setItem('mb_quotes', JSON.stringify(readerQuotes));
+      localStorage.setItem('mb_quote_likes', JSON.stringify(quoteLikes));
     }
 
-    // 渲染商品列表（含分類、關鍵字搜尋、價格排序）
     function renderProductGrid() {
       const grid = document.getElementById('productGrid');
       const searchKeyword = document.getElementById('searchInput').value.trim().toLowerCase();
@@ -745,11 +766,8 @@
         return matchCategory && matchSearch;
       });
 
-      if (sortValue === 'price-asc') {
-        result.sort((a, b) => a.price - b.price);
-      } else if (sortValue === 'price-desc') {
-        result.sort((a, b) => b.price - a.price);
-      }
+      if (sortValue === 'price-asc') result.sort((a, b) => a.price - b.price);
+      else if (sortValue === 'price-desc') result.sort((a, b) => b.price - a.price);
 
       if (result.length === 0) {
         grid.innerHTML = '<div style="width:100%; text-align:center; padding: 40px; color:#888;">查無符合條件的商品選品</div>';
@@ -761,9 +779,7 @@
         return `
           <div class="product-card" onclick="openDetail(${p.id})">
             <div class="product-img-wrap">
-              <button class="fav-btn" onclick="toggleFavorite(event, ${p.id})">
-                ${isFav ? '❤️' : '🤍'}
-              </button>
+              <button class="fav-btn" onclick="toggleFavorite(event, ${p.id})">${isFav ? '❤️' : '🤍'}</button>
               <img src="${p.img}" alt="${p.name}">
             </div>
             <div class="product-content">
@@ -778,10 +794,7 @@
       }).join('');
     }
 
-    function handleFilterChange() {
-      renderProductGrid();
-    }
-
+    function handleFilterChange() { renderProductGrid(); }
     function filterCategory(category, btnElement) {
       document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
       btnElement.classList.add('active');
@@ -789,15 +802,11 @@
       renderProductGrid();
     }
 
-    // ❤️ 收藏清單處理
     function toggleFavorite(e, productId) {
       e.stopPropagation();
       const index = favorites.indexOf(productId);
-      if (index > -1) {
-        favorites.splice(index, 1);
-      } else {
-        favorites.push(productId);
-      }
+      if (index > -1) favorites.splice(index, 1);
+      else favorites.push(productId);
       saveData();
       updateBadges();
       renderProductGrid();
@@ -823,24 +832,20 @@
           </div>
         `).join('');
       }
-
       document.getElementById('favModal').classList.add('active');
     }
 
     function addFavToCart(productId) {
       const prod = products.find(p => p.id === productId);
       const existing = cart.find(item => item.id === productId && item.size === '無');
-      if (existing) {
-        existing.qty += 1;
-      } else {
-        cart.push({ id: prod.id, name: prod.name, price: prod.price, size: '無', qty: 1 });
-      }
+      if (existing) existing.qty += 1;
+      else cart.push({ id: prod.id, name: prod.name, price: prod.price, size: '無', qty: 1 });
       saveData();
       updateBadges();
       alert(`已將「${prod.name}」加入購物車！`);
     }
 
-    // 🌐 API 串接：非同步 fetch 讀者感言
+    // 🌐 非同步 API 串接與重新抓取（結合第 3 點：互動點讚功能）
     async function fetchReaderQuotes() {
       const btn = document.getElementById('fetchApiBtn');
       btn.innerText = '⌛ 載入中...';
@@ -853,17 +858,31 @@
         
         data.forEach((post, index) => {
           if (products[index]) {
-            readerQuotes[products[index].id] = `"${post.title.substring(0, 30)}..."`;
+            readerQuotes[products[index].id] = `"${post.title.substring(0, 35)}..."`;
+            if (quoteLikes[products[index].id] === undefined) {
+              quoteLikes[products[index].id] = Math.floor(Math.random() * 15) + 1; // 隨機初始讚數
+            }
           }
         });
 
-        alert('成功同步最新讀者推薦佳句！點擊商品詳情頁即可查看。');
+        saveData();
+        alert('成功同步最新讀者推薦佳句！點擊商品即可檢視與按讚。');
+        if (currentProduct) openDetail(currentProduct.id);
       } catch (err) {
         alert('載入讀者推薦時發生錯誤，請稍後再試！');
       } finally {
         btn.innerText = '🔄 同步最新讀者推薦';
         btn.disabled = false;
       }
+    }
+
+    // 👍 讀者推薦按讚互動
+    function likeCurrentQuote() {
+      if (!currentProduct) return;
+      const pid = currentProduct.id;
+      quoteLikes[pid] = (quoteLikes[pid] || 0) + 1;
+      saveData();
+      document.getElementById('quoteLikeCount').innerText = quoteLikes[pid];
     }
 
     function showPage(pageId) {
@@ -883,10 +902,11 @@
       document.getElementById('detailAllergen').innerText = currentProduct.allergen;
       document.getElementById('detailQty').value = 1;
 
-      const quoteBox = document.getElementById('detailQuote');
+      const quoteBox = document.getElementById('detailQuoteBox');
       if (readerQuotes[productId]) {
-        quoteBox.innerText = `📖 讀者推薦佳句：${readerQuotes[productId]}`;
-        quoteBox.style.display = 'block';
+        document.getElementById('detailQuoteText').innerText = `📖 讀者推薦佳句：${readerQuotes[productId]}`;
+        document.getElementById('quoteLikeCount').innerText = quoteLikes[productId] || 0;
+        quoteBox.style.display = 'flex';
       } else {
         quoteBox.style.display = 'none';
       }
@@ -897,7 +917,6 @@
       showPage('pageDetail');
     }
 
-    // 👤 會員系統
     function openAuthModal(mode) {
       const title = document.getElementById('authModalTitle');
       const nameGroup = document.getElementById('nameGroup');
@@ -919,7 +938,6 @@
         submitBtn.innerText = '[ 完成註冊並登入 ]';
         switchText.innerHTML = '已經有帳號了？ <span onclick="toggleAuthMode(\'login\')">點此登入</span>';
       }
-
       document.getElementById('authModal').classList.add('active');
     }
 
@@ -930,9 +948,7 @@
       const phone = document.getElementById('authPhone').value.trim();
       const name = document.getElementById('authName').value.trim() || '愛書會員';
 
-      if (!/^09\d{8}$/.test(phone)) {
-        return alert('手機格式錯誤，必須為 09 開頭之 10 碼數字！');
-      }
+      if (!/^09\d{8}$/.test(phone)) return alert('手機格式錯誤，必須為 09 開頭之 10 碼數字！');
 
       currentUser = { name, phone };
       saveData();
@@ -965,34 +981,26 @@
       }
     }
 
-    // 📜 歷史訂單 Modal
     function openOrdersModal() {
       const container = document.getElementById('ordersContainer');
       if (orders.length === 0) {
         container.innerHTML = '<div style="text-align:center; padding:30px; color:#888;">目前尚無歷史訂單紀錄</div>';
       } else {
-        container.innerHTML = orders.map((o, idx) => `
+        container.innerHTML = orders.map(o => `
           <div class="order-card">
             <div class="order-card-header">
               <span>訂單編號 #${o.id}</span>
               <span>${o.date}</span>
             </div>
-            <div style="font-size:0.85rem; color:#666; margin-bottom:6px;">
-              收件人：${o.name} (${o.phone})
-            </div>
-            <div style="font-size:0.88rem;">
-              ${o.items.map(i => `<div>• ${i.name} (${i.size}) x ${i.qty} - NT$ ${i.price * i.qty}</div>`).join('')}
-            </div>
-            <div style="text-align:right; font-weight:bold; color:var(--accent); margin-top:8px;">
-              實付總額：NT$ ${o.total}
-            </div>
+            <div style="font-size:0.85rem; color:#666; margin-bottom:6px;">收件人：${o.name} (${o.phone})</div>
+            <div style="font-size:0.88rem;">${o.items.map(i => `<div>• ${i.name} (${i.size}) x ${i.qty} - NT$ ${i.price * i.qty}</div>`).join('')}</div>
+            <div style="text-align:right; font-weight:bold; color:var(--accent); margin-top:8px;">實付總額：NT$ ${o.total}</div>
           </div>
         `).join('');
       }
       document.getElementById('ordersModal').classList.add('active');
     }
 
-    // 🛒 購物車與免運進度條
     function addToCart() {
       const qty = parseInt(document.getElementById('detailQty').value);
       if (!qty || qty < 1) return alert('請輸入有效的購買數量！');
@@ -1002,20 +1010,13 @@
 
       if (currentProduct.category === 'book') {
         const sizeVal = document.getElementById('detailSize').value;
-        if (sizeVal.includes('A6')) {
-          size = 'A6 隨身便攜款';
-          unitPrice -= 100;
-        } else {
-          size = 'A5 標準款';
-        }
+        if (sizeVal.includes('A6')) { size = 'A6 隨身便攜款'; unitPrice -= 100; }
+        else { size = 'A5 標準款'; }
       }
 
       const existingIndex = cart.findIndex(item => item.id === currentProduct.id && item.size === size);
-      if (existingIndex > -1) {
-        cart[existingIndex].qty += qty;
-      } else {
-        cart.push({ id: currentProduct.id, name: currentProduct.name, price: unitPrice, size: size, qty: qty });
-      }
+      if (existingIndex > -1) cart[existingIndex].qty += qty;
+      else cart.push({ id: currentProduct.id, name: currentProduct.name, price: unitPrice, size: size, qty: qty });
 
       saveData();
       updateBadges();
@@ -1045,7 +1046,6 @@
       const editBtn = document.getElementById('editCartBtn');
       const confirmBtn = document.getElementById('cartConfirmBtn');
 
-      // 免運進度條計算
       const rawTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
       const freeShippingThreshold = 1000;
       const progressPercent = Math.min(100, (rawTotal / freeShippingThreshold) * 100);
@@ -1100,11 +1100,8 @@
     function changeQty(index, delta) {
       cart[index].qty += delta;
       if (cart[index].qty <= 0) {
-        if (confirm(`確定要移除「${cart[index].name}」嗎？`)) {
-          cart.splice(index, 1);
-        } else {
-          cart[index].qty = 1;
-        }
+        if (confirm(`確定要移除「${cart[index].name}」嗎？`)) cart.splice(index, 1);
+        else cart[index].qty = 1;
       }
       saveData();
       updateBadges();
@@ -1120,7 +1117,6 @@
       }
     }
 
-    // 🎫 優惠券套用
     function applyCoupon() {
       const code = document.getElementById('couponInput').value.trim().toUpperCase();
       const msg = document.getElementById('couponMessage');
@@ -1178,14 +1174,10 @@
       `;
     }
 
-    function closeModal(modalId) {
-      document.getElementById(modalId).classList.remove('active');
-    }
+    function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
 
-    // 送出訂單並寫入歷史紀錄
     function submitOrder(e) {
       e.preventDefault();
-
       if (!validatePhone()) {
         alert('請填寫正確的手機格式（09開頭之10碼數字）！');
         document.getElementById('custPhone').focus();
@@ -1210,7 +1202,7 @@
       saveData();
       updateBadges();
 
-      alert('感謝您的訂購！訂單已成功送出並儲存至歷史紀錄。');
+      alert('已收到您的訂單申請，請等待段員確認!');
       closeModal('checkoutModal');
       showPage('pageList');
     }
